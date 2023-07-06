@@ -1,8 +1,51 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Localized Numbers</title>
+</head>
+<body>
+    <ul class="list-unstyled">
+        <h2>@ViewBag.Lang</h2>
+        <li class="mb-2"><a href="?culture=en" class="btn btn-primary">English</a></li>
+        <li class="mb-2"><a href="?culture=fr" class="btn btn-primary">French</a></li>
+        <li class="mb-2"><a href="?culture=ua" class="btn btn-primary">Ukrainian</a></li>
+        <li class="mb-2"><a href="?culture=bg" class="btn btn-primary">Bulgarian</a></li>
+    </ul>
+    <div class="container py-3">
+        <div class="mb-4">
+            <h2 class="mb-3">@ViewBag.Number</h2>
+            <p class="lead">@ViewBag.Number1</p>
+            <p class="lead">@ViewBag.Number2</p>
+            <p class="lead">@ViewBag.Number3</p>
+            <p class="lead">@ViewBag.Number4</p>
+        </div>
+
+        <div class="mb-4">
+            <h2 class="mb-3">@ViewBag.Date</h2>
+            <p class="lead">@ViewBag.Date1</p>
+            <p class="lead">@ViewBag.Date2</p>
+            <p class="lead">@ViewBag.Date3</p>
+            <p class="lead">@ViewBag.Date4</p>
+        </div>
+
+        <div class="mb-4">
+            <div class="container py-3">
+                <h2>@ViewBag.Measurement</h2>
+                <p class="lead">@ViewBag.LengthText @ViewBag.LengthUnit</p>
+                <p class="lead">@ViewBag.WeightText @ViewBag.WeightUnit</p>
+                <p class="lead">@ViewBag.VolumeText @ViewBag.VolumeUnit</p>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+</html>

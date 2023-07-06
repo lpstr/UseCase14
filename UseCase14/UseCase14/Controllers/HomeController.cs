@@ -1,32 +1,66 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using System.Diagnostics;
+using System.Globalization;
 using UseCase14.Models;
 
 namespace UseCase14.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IStringLocalizer<HomeController> _localizer;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IStringLocalizer<HomeController> localizer)
         {
-            _logger = logger;
+            _localizer = localizer;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string culture)
         {
-            return View();
-        }
+            if (!string.IsNullOrEmpty(culture))
+            {
+                Response.Cookies.Append(
+                    CookieRequestCultureProvider.DefaultCookieName,
+                    CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                    new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+                );
+            }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+            string numberFormat = _localizer["NumberFormat"];
+            string dateFormat = _localizer["DateFormat"];
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+
+            ViewBag.Date1 = DateTime.Now.ToString("D", cultureInfo);
+            ViewBag.Date2 = DateTime.Now.ToString("f", cultureInfo);
+            ViewBag.Date3 = DateTime.Now.ToString("Y", cultureInfo);
+            ViewBag.Date4 = DateTime.Now.ToString("dddd", cultureInfo);
+
+            ViewBag.Number1 = 1000000.ToString(numberFormat, CultureInfo.CurrentCulture);
+            ViewBag.Number2 = 500000000.ToString(numberFormat, CultureInfo.CurrentCulture);
+            ViewBag.Number3 = 150.ToString(numberFormat, CultureInfo.CurrentCulture);
+            ViewBag.Number4 = 999999999.ToString(numberFormat, CultureInfo.CurrentCulture);
+
+            ViewBag.LengthText = _localizer["LengthUnitText"];
+            ViewBag.LengthUnit = _localizer["LengthUnit"];
+
+            ViewBag.WeightText = _localizer["WeightUnitText"];
+            ViewBag.WeightUnit = _localizer["WeightUnit"];
+
+            ViewBag.VolumeText = _localizer["VolumeUnitText"];
+            ViewBag.VolumeUnit = _localizer["VolumeUnit"];
+
+            ViewBag.Lang = _localizer["Lang"];
+            ViewBag.Measurement = _localizer["Measurement"];
+            ViewBag.Date = _localizer["Date"];
+            ViewBag.Number = _localizer["Number"];
+
+
+            var model = new UnitsViewModel();
+
+            return View(model);
         }
     }
 }

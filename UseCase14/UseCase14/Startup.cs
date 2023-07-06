@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Localization.Routing;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Options;
 using System.Globalization;
@@ -10,6 +11,10 @@ namespace UseCase14
     {
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var localizationOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
+
+            app.UseRequestLocalization(localizationOptions);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -19,9 +24,6 @@ namespace UseCase14
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
-            var localizationOption = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
-            app.UseRequestLocalization(localizationOption.Value);
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -34,13 +36,13 @@ namespace UseCase14
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{culture=en-US}/{controller=Home}/{action=Index}/{id?}");
             });
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddLocalization(options => options.ResourcesPath = "Locales");
 
             services.AddControllersWithViews()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
@@ -48,15 +50,19 @@ namespace UseCase14
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                var supportedCultures = new List<CultureInfo>
+                var supportedCultures = new[]
                 {
-                    new CultureInfo("en-US"),
-                    // Add other supported cultures here...
+                    new CultureInfo("en"),
+                    new CultureInfo("fr"),
+                    new CultureInfo("ua"),
+                    new CultureInfo("bg")
                 };
 
-                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.DefaultRequestCulture = new RequestCulture("en");
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
+
+                options.RequestCultureProviders.Insert(0, new RouteDataRequestCultureProvider() { Options = options });
             });
         }
     }
